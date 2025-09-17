@@ -107,13 +107,47 @@ import (
 
 const (
 	// ANSI modes
-	ansiEsc          = '\u001b'
-	ansiReset        = "\u001b[0m"
-	ansiFaint        = "\u001b[2m"
-	ansiResetFaint   = "\u001b[22m"
-	ansiBrightRed    = "\u001b[91m"
-	ansiBrightGreen  = "\u001b[92m"
-	ansiBrightYellow = "\u001b[93m"
+	ansiEsc        = '\u001b'
+	ansiReset      = "\u001b[0m"
+	ansiFaint      = "\u001b[2m"
+	ansiResetFaint = "\u001b[22m"
+
+	AnsiBold           = "\033[1m" // Bold on
+	AnsiItalic         = "\033[3m" // Italic on
+	AnsiUnderline      = "\033[4m"
+	AnsiBlink          = "\033[5m"
+	AnsiRapidBlink     = "\033[6m" // Rapid blink on
+	AnsiReverse        = "\033[7m"
+	AnsiConceal        = "\033[8m" // Conceal on
+	AnsiCrossed        = "\033[9m" // Crossed-out on
+	AnsiBrightRed      = "\033[91m"
+	AnsiBrightGreen    = "\033[92m"
+	AnsiBrightYellow   = "\033[93m"
+	AnsiBrightWhite    = "\033[97m"
+	AnsiBrightRedFaint = "\033[91;2m"
+	AnsiBlack          = "\033[30m" // Set text color to black
+	AnsiRed            = "\033[31m" // Set text color to red
+	AnsiGreen          = "\033[32m" // Set text color to green
+	AnsiYellow         = "\033[33m" // Set text color to yellow
+	AnsiBlue           = "\033[34m" // Set text color to blue
+	AnsiMagenta        = "\033[35m" // Set text color to magenta
+	AnsiCyan           = "\033[36m" // Set text color to cyan
+	AnsiWhite          = "\033[37m" // Set text color to white
+	AnsiColorReset     = "\033[39m" // Reset text color to default
+
+	AnsiBackgroundBlack        = "\033[40m"  // Set background color to black
+	AnsiBackgroundBrightBlack  = "\033[100m" // Set background color to black
+	AnsiBackgroundRed          = "\033[41m"  // Set background color to red
+	AnsiBackgroundBrightRed    = "\033[101m" // Set background color to red
+	AnsiBackgroundGreen        = "\033[42m"  // Set background color to green
+	AnsiBackgroundBrightGreen  = "\033[102m" // Set background color to green
+	AnsiBackgroundYellow       = "\033[43m"  // Set background color to yellow
+	AnsiBackgroundBrightYellow = "\033[103m" // Set background color to yellow
+	AnsiBackgroundBlue         = "\033[44m"  // Set background color to blue
+	AnsiBackgroundMagenta      = "\033[45m"  // Set background color to magenta
+	AnsiBackgroundCyan         = "\033[46m"  // Set background color to cyan
+	AnsiBackgroundWhite        = "\033[47m"  // Set background color to white
+	AnsiBackgroundReset        = "\033[49m"  // Reset background color to default
 
 	errKey = "err"
 
@@ -331,9 +365,10 @@ func (h *handler) appendTintTime(buf *buffer, t time.Time, color int16) {
 	} else {
 		if color >= 0 {
 			appendAnsi(buf, uint8(color), true)
-		} else {
-			buf.WriteString(ansiFaint)
 		}
+		// } else {
+		// 	buf.WriteString(ansiFaint)
+		// }
 		*buf = t.AppendFormat(*buf, h.opts.TimeFormat)
 		buf.WriteString(ansiReset)
 	}
@@ -356,11 +391,11 @@ func (h *handler) appendTintLevel(buf *buffer, level slog.Level, color int16) {
 			switch {
 			case level < slog.LevelInfo:
 			case level < slog.LevelWarn:
-				buf.WriteString(ansiBrightGreen)
+				buf.WriteString(AnsiBrightGreen)
 			case level < slog.LevelError:
-				buf.WriteString(ansiBrightYellow)
+				buf.WriteString(AnsiBrightYellow)
 			default:
-				buf.WriteString(ansiBrightRed)
+				buf.WriteString(AnsiBrightRed)
 			}
 		}
 	}

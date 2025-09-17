@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lmittmann/tint"
+	"github.com/pgradoboev/tint"
 )
 
 func Example() {
