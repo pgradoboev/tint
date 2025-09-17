@@ -107,19 +107,21 @@ import (
 
 const (
 	// ANSI modes
-	ansiEsc        = '\u001b'
-	ansiReset      = "\u001b[0m"
-	ansiFaint      = "\u001b[2m"
-	ansiResetFaint = "\u001b[22m"
+	ansiEsc = '\u001b'
 
+	AnsiReset          = "\033[0m"
+	AnsiFaint          = "\u001b[2m"
+	AnsiResetFaint     = "\u001b[22m"
 	AnsiBold           = "\033[1m" // Bold on
 	AnsiItalic         = "\033[3m" // Italic on
 	AnsiUnderline      = "\033[4m"
 	AnsiBlink          = "\033[5m"
 	AnsiRapidBlink     = "\033[6m" // Rapid blink on
 	AnsiReverse        = "\033[7m"
-	AnsiConceal        = "\033[8m" // Conceal on
-	AnsiCrossed        = "\033[9m" // Crossed-out on
+	AnsiConceal        = "\033[8m"  // Conceal on
+	AnsiCrossed        = "\033[9m"  // Crossed-out on
+	AnsiLightGray      = "\033[37m" // Светло-серый (часто белый)
+	AnsiGray           = "\033[90m" // Стандартный темно-серый
 	AnsiBrightRed      = "\033[91m"
 	AnsiBrightGreen    = "\033[92m"
 	AnsiBrightYellow   = "\033[93m"
@@ -285,9 +287,9 @@ func (h *handler) Handle(_ context.Context, r slog.Record) error {
 				if h.opts.NoColor {
 					appendSource(buf, src)
 				} else {
-					buf.WriteString(ansiFaint)
+					buf.WriteString(AnsiFaint)
 					appendSource(buf, src)
-					buf.WriteString(ansiReset)
+					buf.WriteString(AnsiReset)
 				}
 				buf.WriteByte(' ')
 			} else if a := rep(nil /* groups */, slog.Any(slog.SourceKey, src)); a.Key != "" {
@@ -365,12 +367,11 @@ func (h *handler) appendTintTime(buf *buffer, t time.Time, color int16) {
 	} else {
 		if color >= 0 {
 			appendAnsi(buf, uint8(color), true)
+		} else {
+			buf.WriteString(AnsiGray)
 		}
-		// } else {
-		// 	buf.WriteString(ansiFaint)
-		// }
 		*buf = t.AppendFormat(*buf, h.opts.TimeFormat)
-		buf.WriteString(ansiReset)
+		buf.WriteString(AnsiReset)
 	}
 }
 
@@ -412,7 +413,7 @@ func (h *handler) appendTintLevel(buf *buffer, level slog.Level, color int16) {
 	}
 
 	if !h.opts.NoColor && level >= slog.LevelInfo {
-		buf.WriteString(ansiReset)
+		buf.WriteString(AnsiReset)
 	}
 }
 
@@ -467,13 +468,13 @@ func (h *handler) appendAttr(buf *buffer, attr slog.Attr, groupsPrefix string, g
 		if color >= 0 {
 			appendAnsi(buf, uint8(color), true)
 			h.appendKey(buf, attr.Key, groupsPrefix)
-			buf.WriteString(ansiResetFaint)
+			buf.WriteString(AnsiResetFaint)
 			h.appendValue(buf, attr.Value, true)
-			buf.WriteString(ansiReset)
+			buf.WriteString(AnsiReset)
 		} else {
-			buf.WriteString(ansiFaint)
+			buf.WriteString(AnsiGray)
 			h.appendKey(buf, attr.Key, groupsPrefix)
-			buf.WriteString(ansiReset)
+			buf.WriteString(AnsiReset)
 			h.appendValue(buf, attr.Value, true)
 		}
 	}
@@ -542,11 +543,12 @@ func (h *handler) appendTintValue(buf *buffer, val slog.Value, quote bool, color
 		if color >= 0 {
 			appendAnsi(buf, uint8(color), faint)
 		} else if faint {
-			buf.WriteString(ansiFaint)
+			//buf.WriteString(AnsiFaint)
+			buf.WriteString(AnsiGray)
 		}
 		h.appendValue(buf, val, quote)
 		if color >= 0 || faint {
-			buf.WriteString(ansiReset)
+			buf.WriteString(AnsiReset)
 		}
 	}
 }
